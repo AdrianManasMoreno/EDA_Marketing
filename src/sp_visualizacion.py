@@ -38,3 +38,28 @@ def subplot_col_cat(df):
   #Ajustar el espacio entre los subplots
   fig.tight_layout()
   plt.show()
+
+def subplot_col_num (df, col):
+  num_graph = len(col) # Número de gráficos a mostrar
+  num_rows = (num_graph +2) // 2 # Número de filas
+  fig, axes = plt.subplots(num_graph, 2, figsize=(15, 5 * num_rows)) # Definimos la figura
+
+  for i, col in enumerate(col):
+    sns.histplot(data = df, 
+                x = col, 
+                kde = True, 
+                ax = axes[i,0], bins=200)# Creamos el histograma
+    axes[i,0].set_title(f'Distribucion de {col}') # Añadimos el título
+    axes[i,0].set_ylabel('Frecuencia') # Añadimos la etiqueta del eje y
+    
+    sns.boxplot(data = df,
+                x = col,  
+                ax = axes[i,1])# Creamos el histograma
+    axes[i,1].set_title(f'Boxplot de {col}') # Añadimos el título
+
+
+  for j in range(i+1, len(axes)):
+    fig.delaxes(axes[j]) # Eliminamos los ejes que no vamos a usar
+    
+  plt.tight_layout()
+  plt.show()
