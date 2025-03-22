@@ -63,3 +63,83 @@ def subplot_col_num (df, col):
     
   plt.tight_layout()
   plt.show()
+  
+def analyze_ctr_without_outliers(data, no_outliers = False):
+    """
+    Función que analiza el CTR sin los outliers
+    """
+    if no_outliers == True:
+      #Analisis del CTR por campaña y canal
+      ctr_by_campaign = data.groupby('campaign_type')['CTR'].mean().sort_values(ascending=False) # CTR por campaña
+      ctr_by_channel = data.groupby('channel_used')['CTR'].mean().sort_values(ascending=False) # CTR por canal
+    else:
+      ctr_by_campaign = data.groupby('campaign_type')['CTR'].median().sort_values(ascending=False) # CTR por campaña
+      ctr_by_channel = data.groupby('channel_used')['CTR'].median().sort_values(ascending=False) # CTR por canal
+      
+    print("CTR promedio por campaña:")
+    print(ctr_by_campaign, "\n")
+    print("CTR promedio por canal:")
+    print(ctr_by_channel, "\n")
+    
+    #Crear el subplot
+    fig, axs = plt.subplots(1, 2, figsize=(16, 6))
+    
+    #Primer grafico CTR por tipo de campaña
+    sns.barplot(x=ctr_by_campaign.index, y=ctr_by_campaign.values, palette='coolwarm', hue=ctr_by_campaign.index, ax=axs[0])
+    axs[0].set_title('CTR promedio por campaña')
+    axs[0].set_xticklabels(ctr_by_campaign.index, rotation=45)
+    axs[0].tick_params(axis='x', labelsize=10)
+    axs[0].tick_params(axis='y', labelsize=10)
+    
+    #Segundo grafico CTR por canal
+    sns.barplot(x=ctr_by_channel.index, y=ctr_by_channel.values, palette='viridis', hue=ctr_by_channel.index, ax=axs[1])
+    axs[1].set_title('CTR promedio por canal')
+    axs[1].set_xticklabels(ctr_by_channel.index, rotation=45)
+    axs[1].tick_params(axis='x', labelsize=10)
+    axs[1].tick_params(axis='y', labelsize=10)
+    
+    #Ajustar el layout para que los titulos y etiquetas no se solapen
+    plt.tight_layout()
+
+def analyze_conversion_metrics(data, no_outliers = False):
+  metrics = ['conversion_cost', 'conversion_value']
+  if no_outliers == True:
+    for metric in metrics:
+    #Analisis del CTR por campaña y canal
+      metric_by_channel = data.groupby('channel_used')[metric].mean().sort_values(ascending=False)
+      metric_by_segment = data.groupby('customer_segment')[metric].mean().sort_values(ascending=False)
+    
+      print(f"{metric.capitalize()} promedio por canal utilizado")
+      print(metric_by_channel, "\n")
+      print(f"{metric.capitalize()} promedio por segmento de cliente")
+      print(metric_by_segment, "\n")
+  else:
+    for metric in metrics:
+    #Analisis del CTR por campaña y canal
+      metric_by_channel = data.groupby('channel_used')[metric].median().sort_values(ascending=False)
+      metric_by_segment = data.groupby('customer_segment')[metric].median().sort_values(ascending=False)
+    
+      print(f"{metric.capitalize()} promedio por canal utilizado")
+      print(metric_by_channel, "\n")
+      print(f"{metric.capitalize()} promedio por segmento de cliente")
+      print(metric_by_segment, "\n")
+      
+  #Crear el subplot de Visualizacion
+  fig, axs = plt.subplots(1, 2, figsize=(16, 6))
+    
+  #Primer grafico, metrica promedio por canal
+  sns.barplot(x=metric_by_channel.index, y=metric_by_channel.values, palette='muted', ax=axs[0])
+  axs[0].set_title(f"{metric.capitalize()} promedio por canal utilizado")
+  axs[0].set_xticklabels(metric_by_channel.index, rotation=45)
+  axs[0].tick_params(axis='x', labelsize=10)
+  axs[0].tick_params(axis='y', labelsize=10)
+    
+  #Segundo grafico, metrica promedio por segmento de cliente
+  sns.barplot(x=metric_by_segment.index, y=metric_by_segment.values, palette='cubehelix', ax=axs[1])
+  axs[1].set_title(f"{metric.capitalize()} promedio por cliente")
+  axs[1].set_xticklabels(metric_by_channel.index, rotation=45)
+  axs[1].tick_params(axis='x', labelsize=10)
+  axs[1].tick_params(axis='y', labelsize=10)
+    
+  #Ajustar el layout para que los titulos y etiquetas no se solapen
+  plt.tight_layout()
